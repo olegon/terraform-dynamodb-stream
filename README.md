@@ -31,9 +31,10 @@ O desafio é disparar um novo evento se, e somente se, os dois eventos forem rec
 
 ## Solução
 
-- quando uma mensagem cair no SQS `app-events`, uma Lambda cadastrá esse evento no DynamoDB `app-events-registry`;
-- o DynamoDB possui um *stream* habilitado que é processado pela Lambda `app-events-registry-stream`, que verifica quando eventos foram correlacionados/agregados com sucesso;
-- os itens são cadastrados com TTL no DynamoDB, assim é possível reagir quando apenas um evento chega e o DynamoDB não fica com muitos itens por muito tempo.
+- quando uma mensagem cair no SQS `app-events`, uma Lambda `app-events-check` cadastrá esse evento no DynamoDB `app-events-registry`;
+- o DynamoDB possui um *Stream* habilitado que é processado pela Lambda `app-events-registry-stream`, que verifica quando eventos foram correlacionados/agregados com sucesso;
+    - parte do filtro é feito com [lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html#filtering-streams). *(Obrigado, Leandro Paixao e Carlos Decloedt, pela dica!)*
+- como os itens são gravados com TTL no Dynamo, a Lambda `app-events-registry-tt-stream` é responsável por tratar eventos incompletos (sem casamento) expirados pelo próprio DynamoDB;
 
 ## Itens implementados
 

@@ -12,11 +12,57 @@ module "app_events_registry_stream_lambda" {
       event_source_arn  = module.app_events_registry_dynamodb_table.dynamodb_table_stream_arn
       starting_position = "LATEST"
       #   destination_arn_on_failure = aws_sqs_queue.failure.arn
-      #   filter_criteria = {
-      #     pattern = jsonencode({
-      #       eventName : ["INSERT"]
-      #     })
-      #   }
+      filter_criteria = {
+        pattern = jsonencode({
+          eventName = ["MODIFY"]
+          dynamodb = {
+            NewImage = {
+              "eventA" = {
+                S = [{ exists = true}]
+              }
+              "eventB" = {
+                S = [{ exists = true}]
+              }
+            }
+          }
+        })
+      }
+    }
+  }
+
+  allowed_triggers = {
+    dynamodb = {
+      principal  = "dynamodb.amazonaws.com"
+      source_arn = module.app_events_registry_dynamodb_table.dynamodb_table_stream_arn
+    }
+  }
+
+  create_current_version_allowed_triggers = false
+  attach_policy_json                      = true
+  policy_json                             = data.aws_iam_policy_document.app_events_registry_stream_lambda_policy.json
+
+  tags = var.default_tags
+}
+
+module "app_events_registry_ttl_stream_lambda" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "app-events-registry-ttl-stream"
+  handler       = "index.lambda_handler"
+  runtime       = "nodejs14.x"
+
+  source_path = "./lambda_src/app-events-registry-ttl-stream"
+
+  event_source_mapping = {
+    dynamodb = {
+      event_source_arn  = module.app_events_registry_dynamodb_table.dynamodb_table_stream_arn
+      starting_position = "LATEST"
+      #   destination_arn_on_failure = aws_sqs_queue.failure.arn
+      filter_criteria = {
+        pattern = jsonencode({
+          eventName = ["REMOVE"]
+        })
+      }
     }
   }
 
@@ -50,6 +96,16 @@ data "aws_iam_policy_document" "app_events_registry_stream_lambda_policy" {
     ]
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

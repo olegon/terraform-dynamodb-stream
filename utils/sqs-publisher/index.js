@@ -5,7 +5,7 @@ const client = new SQSClient({
 });
 
 (async () => {
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 1; i++) {
         const firstEventId = generateRandomId();
         const secondEventId = generateRandomId();
 
