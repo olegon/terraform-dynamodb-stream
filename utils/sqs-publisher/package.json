@@ -1,0 +1,16 @@
+{
+  "name": "sqs-publisher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Leandro Gonçalves de Oliveira <olegon.main@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.81.0"
+  }
+}
