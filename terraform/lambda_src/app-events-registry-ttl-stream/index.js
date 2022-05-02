@@ -8,7 +8,7 @@ exports.lambda_handler = async function(event, context) {
 
         if (isExpiredByTTL(record)) {
             console.log('Record removed by TTL.');
-            
+
             const { NewImage, OldImage } = dynamodb;  
             analyzeRegister(OldImage);
         }
@@ -18,6 +18,7 @@ exports.lambda_handler = async function(event, context) {
     }
 }
 
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/time-to-live-ttl-streams.html
 function isExpiredByTTL(record) {
     const { eventName, userIdentity: { principalId, type } = { } } = record;
 
